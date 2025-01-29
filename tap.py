@@ -1,86 +1,85 @@
-# import pyautogui
-# import time
-#
-# print("Наведите мышь на нужное место. Координаты будут отображаться каждые 2 секунды.")
-# try:
-#     while True:
-#         x, y = pyautogui.position()  # Получаем текущие координаты мыши
-#         print(f"Текущие координаты: X={x}, Y={y}")
-#         time.sleep(2)  # Задержка для обновления
-# except KeyboardInterrupt:
-#     print("Выход из программы.")
-
 import pyautogui
 import random
 import time
 
+def get_mouse_position():
+    """
+    Displays the current mouse coordinates every 2 seconds until interrupted.
+    """
+    print("Move the mouse to the desired location. Coordinates will be displayed every 2 seconds.")
+    try:
+        while True:
+            x, y = pyautogui.position()  # Get current mouse coordinates
+            print(f"Current coordinates: X={x}, Y={y}")
+            time.sleep(2)  # Delay for update
+    except KeyboardInterrupt:
+        print("Exiting the program.")
+
 def random_move_and_click(region, multi_clicks=False):
     """
-    Выполняет случайное перемещение и клик внутри указанной области.
-    :param region: Кортеж (x, y, ширина, высота) для области кликов.
-    :param multi_clicks: Если True, выполняет несколько кликов в одной точке.
+    Performs a random movement and click within the specified area.
+    :param region: Tuple (x, y, width, height) defining the click area.
+    :param multi_clicks: If True, performs multiple clicks at the same point.
     """
     x_start, y_start, width, height = region
 
-    # Генерация случайной точки внутри области
+    # Generate a random point within the area
     x = random.randint(x_start, x_start + width)
     y = random.randint(y_start, y_start + height)
 
-    # Перемещение мыши
-    move_duration = random.uniform(0.1, 0.5)  # Ускоренное движение
+    # Move the mouse
+    move_duration = random.uniform(0.1, 0.5)  # Faster movement
     pyautogui.moveTo(x, y, duration=move_duration)
 
     if multi_clicks:
-        # Выполнение нескольких кликов в одной точке
-        num_clicks = random.randint(2, 5)  # Количество кликов
+        # Perform multiple clicks at the same point
+        num_clicks = random.randint(2, 5)  # Number of clicks
         for i in range(num_clicks):
             pyautogui.click()
-            print(f"Клик #{i + 1} в точке: ({x}, {y})")
-            time.sleep(random.uniform(0.05, 0.2))  # Минимальная задержка между кликами
+            print(f"Click #{i + 1} at: ({x}, {y})")
+            time.sleep(random.uniform(0.05, 0.2))  # Minimal delay between clicks
     else:
-        # Одиночный клик
+        # Single click
         pyautogui.click()
-        print(f"Клик выполнен в точке: ({x}, {y})")
+        print(f"Click performed at: ({x}, {y})")
 
-    # Уменьшенная задержка после действия
+    # Reduced delay after action
     post_click_delay = random.uniform(0.1, 0.3)
     time.sleep(post_click_delay)
 
 
 def random_scroll_chance():
     """
-    Иногда выполняет случайную прокрутку вверх или вниз.
+    Occasionally performs a random scroll up or down.
     """
-    if random.random() < 0.1:  # 10% шанс прокрутки
-        scroll_amount = random.randint(-100, 100)  # Меньший диапазон прокрутки
+    if random.random() < 0.1:  # 10% chance of scrolling
+        scroll_amount = random.randint(-100, 100)  # Smaller scroll range
         pyautogui.scroll(scroll_amount)
-        print(f"Прокрутка на {scroll_amount} пикселей")
+        print(f"Scrolled by {scroll_amount} pixels")
 
 
 def main():
-    region = (383, 423, 937, 636)  # Область для кликов
-    num_clicks = 500  # Увеличено количество кликов за один запуск
+    region = (383, 423, 937, 636)  # Click area
+    num_clicks = 500  # Increased number of clicks per run
 
-    print(f"Старт. Запланировано {num_clicks} кликов.")
+    print(f"Starting. Scheduled {num_clicks} clicks.")
     for i in range(num_clicks):
-        print(f"Цикл {i + 1}/{num_clicks}")
+        print(f"Cycle {i + 1}/{num_clicks}")
 
-        # Выполнение случайного перемещения и клика
-        multi_click_chance = random.random() < 0.3  # 30% шанс на несколько кликов
+        # Perform random movement and click
+        multi_click_chance = random.random() < 0.3  # 30% chance for multiple clicks
         random_move_and_click(region, multi_clicks=multi_click_chance)
 
-        # Возможная прокрутка
+        # Possible scrolling
         random_scroll_chance()
 
-        # Минимальная задержка между циклами
-        delay = random.uniform(0.1, 0.5)  # Сокращённая пауза
-        print(f"Задержка: {delay:.2f} секунд")
+        # Minimal delay between cycles
+        delay = random.uniform(0.1, 0.5)  # Shortened pause
+        print(f"Delay: {delay:.2f} seconds")
         time.sleep(delay)
 
-    print("Автоматизация завершена.")
+    print("Automation complete.")
 
 
 if __name__ == "__main__":
     main()
-
-
