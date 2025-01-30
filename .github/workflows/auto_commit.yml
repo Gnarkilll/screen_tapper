@@ -10,14 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3  # Клонируем репозиторий
+        uses: actions/checkout@v3  # Клонирует репозиторий
 
       - name: Configure Git
         run: |
           git config --global user.name "Gnarkilll"
           git config --global user.email "vpcorwin@gmail.com"
-          git config --global credential.helper cache
-          git config --global http.https://github.com/.extraheader "AUTHORIZATION: basic $(echo -n x-access-token:${{ secrets.GH_PAT }} | base64)"
 
       - name: Debug GH_PAT
         run: |
@@ -38,13 +36,11 @@ jobs:
           git add activity_log.txt
           git commit -m "Auto-commit $(date)" || exit 0  # Если нечего коммитить — не ломает workflow
 
-      - name: Set up authentication
+      - name: Set remote with GH_PAT
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          git remote remove origin
-          git remote add origin https://${GH_PAT}@github.com/Gnarkilll/screen_tapper.git
-          git fetch origin
+          git remote set-url origin https://${GH_PAT}@github.com/Gnarkilll/screen_tapper.git
 
       - name: Push changes
         run: |
