@@ -9,39 +9,25 @@ jobs:
   commit:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3  # Клонирует репозиторий
-
-      - name: Configure Git
+      - name: Clone repository manually
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
+          git clone https://${GH_PAT}@github.com/Gnarkilll/screen_tapper.git repo
+          cd repo
           git config --global user.name "Gnarkilll"
           git config --global user.email "vpcorwin@gmail.com"
 
-      - name: Debug GH_PAT
-        run: |
-          if [ -z "${{ secrets.GH_PAT }}" ]; then
-            echo "❌ GH_PAT is EMPTY! Проверь, что он передаётся в Secrets."
-            exit 1
-          else
-            echo "✅ GH_PAT is set."
-          fi
-
-      - name: Debug Git User
-        run: |
-          git config --list  # Показывает текущие настройки Git
-
       - name: Make changes
         run: |
+          cd repo
           echo "Auto-commit: $(date)" >> activity_log.txt
           git add activity_log.txt
           git commit -m "Auto-commit $(date)" || exit 0  # Если нечего коммитить — не ломает workflow
 
-      - name: Set remote with GH_PAT
+      - name: Push changes
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          git remote set-url origin https://${GH_PAT}@github.com/Gnarkilll/screen_tapper.git
-
-      - name: Push changes
-        run: |
+          cd repo
           git push origin main
