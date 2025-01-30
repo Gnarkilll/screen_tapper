@@ -1,9 +1,9 @@
-name: Hourly Commit
+name: Auto Commit
 
 on:
   schedule:
-    - cron: "0 * * * *"  # Запуск каждый час
-  workflow_dispatch:  # Позволяет запускать вручную
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
 
 jobs:
   commit:
