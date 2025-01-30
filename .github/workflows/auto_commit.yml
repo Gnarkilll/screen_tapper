@@ -23,7 +23,7 @@ jobs:
           cd repo
           echo "Auto-commit: $(date)" >> activity_log.txt
           git add activity_log.txt
-          git commit -m "Auto-commit $(date)" || exit 0  # Если нечего коммитить — не ломает workflow
+          git commit -m "Auto-commit $(date)" || exit 0
 
       - name: Push changes
         env:
