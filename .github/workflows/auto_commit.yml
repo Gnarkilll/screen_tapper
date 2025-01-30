@@ -48,4 +48,6 @@ jobs:
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          git push origin HEAD:main
+          git remote set-url origin https://${GH_PAT}@github.com/${{ github.repository }}.git
+          git branch -M main  # Убедимся, что работа идёт в main
+          git push origin main  # Пушим в main
