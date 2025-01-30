@@ -2,25 +2,27 @@ name: Hourly Commit
 
 on:
   schedule:
-    - cron: "0 * * * *"
-  workflow_dispatch:
+    - cron: "0 * * * *"  # Запуск каждый час
+  workflow_dispatch:  # Позволяет запускать вручную
 
 jobs:
   commit:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3  # Клонируем репозиторий
 
       - name: Configure Git
         run: |
           git config --global user.name "Gnarkilll"
           git config --global user.email "vpcorwin@gmail.com"
+          git config --global credential.helper cache
+          git config --global http.https://github.com/.extraheader "AUTHORIZATION: basic $(echo -n x-access-token:${{ secrets.GH_PAT }} | base64)"
 
       - name: Debug GH_PAT
         run: |
           if [ -z "${{ secrets.GH_PAT }}" ]; then
-            echo "❌ GH_PAT is EMPTY!"
+            echo "❌ GH_PAT is EMPTY! Проверь, что он передаётся в Secrets."
             exit 1
           else
             echo "✅ GH_PAT is set."
@@ -28,21 +30,22 @@ jobs:
 
       - name: Debug Git User
         run: |
-          git config --list
+          git config --list  # Показывает текущие настройки Git
 
       - name: Make changes
         run: |
           echo "Auto-commit: $(date)" >> activity_log.txt
           git add activity_log.txt
-          git commit -m "Auto-commit $(date)" || exit 0
+          git commit -m "Auto-commit $(date)" || exit 0  # Если нечего коммитить — не ломает workflow
 
       - name: Set up authentication
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          git config --global credential.helper store
-          echo "https://${GH_PAT}:@github.com" > ~/.git-credentials
+          git remote remove origin
+          git remote add origin https://${GH_PAT}@github.com/Gnarkilll/screen_tapper.git
+          git fetch origin
 
       - name: Push changes
         run: |
-          git push https://github.com/Gnarkilll/screen_tapper.git HEAD:main
+          git push origin main
