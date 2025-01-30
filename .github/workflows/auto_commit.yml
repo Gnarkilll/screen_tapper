@@ -2,15 +2,15 @@ name: Hourly Commit
 
 on:
   schedule:
-    - cron: "0 * * * *"  # Запускается каждый час в начале часа
-  workflow_dispatch:  # Позволяет запускать вручную
+    - cron: "0 * * * *"
+  workflow_dispatch:
 
 jobs:
   commit:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3  # Клонирует репозиторий
+        uses: actions/checkout@v3
 
       - name: Configure Git
         run: |
@@ -20,7 +20,7 @@ jobs:
       - name: Debug GH_PAT
         run: |
           if [ -z "${{ secrets.GH_PAT }}" ]; then
-            echo "❌ GH_PAT is EMPTY! Проверь, что он передаётся в Secrets."
+            echo "❌ GH_PAT is EMPTY!"
             exit 1
           else
             echo "✅ GH_PAT is set."
@@ -28,17 +28,24 @@ jobs:
 
       - name: Debug Git User
         run: |
-          git config --list  # Выведет текущего пользователя Git
+          git config --list
 
       - name: Make changes
         run: |
           echo "Auto-commit: $(date)" >> activity_log.txt
           git add activity_log.txt
-          git commit -m "Auto-commit $(date)" || exit 0  # Не ломает workflow, если нечего коммитить
+          git commit -m "Auto-commit $(date)" || exit 0
+
+      - name: Set remote with GH_PAT
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          git remote remove origin
+          git remote add origin https://${GH_PAT}@github.com/${{ github.repository }}.git
+          git fetch origin
 
       - name: Push changes
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          git remote set-url origin https://${GH_PAT}@github.com/${{ github.repository }}.git
-          git push origin main  # Проверь, что у тебя правильная ветка!
+          git push origin HEAD:main
