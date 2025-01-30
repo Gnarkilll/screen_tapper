@@ -36,18 +36,13 @@ jobs:
           git add activity_log.txt
           git commit -m "Auto-commit $(date)" || exit 0
 
-      - name: Set remote with GH_PAT
+      - name: Set up authentication
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          git remote remove origin
-          git remote add origin https://${GH_PAT}@github.com/${{ github.repository }}.git
-          git fetch origin
+          git config --global credential.helper store
+          echo "https://${GH_PAT}:@github.com" > ~/.git-credentials
 
       - name: Push changes
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          git remote set-url origin https://${GH_PAT}@github.com/${{ github.repository }}.git
-          git branch -M main
-          git push origin main
+          git push https://github.com/Gnarkilll/screen_tapper.git HEAD:main
